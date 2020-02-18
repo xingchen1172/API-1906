@@ -26,5 +26,12 @@ Route::prefix('/wx')->group(function () {
     Route::any('curl2','Test\TestController@curl2');
     Route::any('guzzle','Test\TestController@guzzle');
 });
+Route::prefix('/goods')->group(function () {
+    Route::any('detail','Goods\GoodsController@detail');
+    Route::any('getUrl','Goods\GoodsController@getUrl');
+    Route::any('redisStr1','Goods\GoodsController@redisStr1');
+});
+
+
 
 
