@@ -269,6 +269,7 @@ class TestController extends Controller
 
         if($count > $max){
             echo "你在刷接口";
+            
             die;
         }
         Redis::incr($key);
