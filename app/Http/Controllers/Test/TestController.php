@@ -11,280 +11,293 @@ use Guzzle\Cilent;
 
 class TestController extends Controller
 {
-    public function access_token()
-    {
-        $appid = "wx862686ded89ed2cd";
-        $appsecret = "5df895759d47f1ae4511f36ad8bbe960";
-        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$appid."&secret=".$appsecret;
-        echo $url;
-        //使用file_get_contents发起get请求
-    
-        $response = file_get_contents($url);
-        var_dump($response);
-        $arr = json_decode($response,true);
-        var_dump($arr);
+     //redis 测试
+     public function testredis(){
+        $key ="1906";
+        // $val="hello world";
+        $val=time();
+        Redis::set($key,$val);    //set 设置一个 键 并赋值
+        $value=Redis::get($key);  //获取 key 的值
+        echo 'value:'.$value;     //  展示  这个值
     }
-    public function curl1()
-    {
-        $appid = "wx862686ded89ed2cd";
-        $appsecret = "5df895759d47f1ae4511f36ad8bbe960";
-        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$appid."&secret=".$appsecret;
+
+    //file_get_contents   GET方式
+    public  function file_get_contents(){
+        $Appid='wx8bc80f5949fda528';
+        $appsecret='f4852897a0b441624d7c845c878f2548';
+        $url='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$Appid.'&secret='.$appsecret;
         // echo $url;
-        //初始化
-        $ch = curl_init($url);
-        //设置参数
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        //执行会话
-        $response = curl_exec($ch);
+        $json=file_get_contents($url);
+        $arr=json_decode($json,true);
+        dd($arr);
+    }
 
-        //捕获错误
-        $errno = curl_error($ch);
-        $error = curl_error($ch);
-        if($errno > 0){
-            echo "错误码".$errno;
-            echo "错误信息".$error;
-            die;
-        }
+    //CURL   get
+    public function curl(){
+        $Appid='wx8bc80f5949fda528';
+        $appsecret='f4852897a0b441624d7c845c878f2548';
+        $url='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$Appid.'&secret='.$appsecret;
+
+        $ch = curl_init($url);  //初始化   1
+        curl_setopt($ch, CURLOPT_HEADER, 0);  //设置参数选项  2
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);  //  2
+        $response=curl_exec($ch);     //执行会话   3
+        curl_close($ch);    //关闭会话   4
         
-
-        // var_dump($error);die;
-
-        //关闭会话
-        curl_close($ch);
-
-        // echo "服务器响应数据";
-        // echo $response;
-        $arr = json_encode($response);
-        echo $arr;
+        $arr=json_decode($response,true);
+        dd($arr);
 
     }
-    public function guzzle(){
-        $appid = "wx862686ded89ed2cd";
-        $appsecret = "5df895759d47f1ae4511f36ad8bbe960";
-        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$appid."&secret=".$appsecret;
 
-        $client = new Client();
-        $response = $client->request('GET',$url);
-        // dd($response);
-        $data = $response->getBody();
-        echo $data;
-    }
-    public function curl2()
-    {
-        $access_token = "30_vMtRvSfmtSQFs-R7g2zHjCIR61qIpbzo9WlCyzU0GFT8sMmRCXr_BZyu9UcuAkF7gFN160KNtkU3Bv9p_8Qashi8_pAAskaE7R7zP75KmobBGTj2b5c6g-lDkVCa2utl3uWyTJvSvv97D1CSJWFgADAQDM";
-        $url = " https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$access_token;
-        $menu = [
-            [
-                "button"    => [
-                    "type" => "click",
-                    "name" => "CURL",
-                    "key"  => "curl001"
+    //curl  POST
+    public function curlPost(){
+        
+        $token='30_XCg_HQ7KEHZwL32a3IeeCSscd9Yon0pzcfVEGREV6lU_qJ4m_LnGt9R2z3835iK9AiLSvdR0l-H3lIjyFey0pnc2QFl0WfIil-5d1i80sbUajvL2dkSL8AbePc-bENg_zKA5GLPSqZZXYV_2XBEaACAKOR';
+        $url='https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$token;
+        $ticket=[
+            'expire_seconds'=>'604800',
+            'action_name'=>'QR_STR_SCENE',
+            'action_info'=>[
+                'scene'=>[
+                    'scene_str'=>'test'
                 ]
             ]
         ];
-        //初始化
-        $ch = curl_init($url);
-        //设置参数
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        //POST请求
-        curl_setopt($ch,CURLOPT_PORT,true);
-        //发送json数据  用form-data形式
-        culr_setopt($ch,CURLOPT_HTTPHEADER,['Content-Typr:application/json']);
-        curl_setopt($ch,CURLOPT_POSTFIELDS,json_encode($menu));
 
-         //执行会话
-         $response = curl_exec($ch);
+        $ch=curl_init($url);    //初始化
+        curl_setopt($ch, CURLOPT_HEADER, 0);  //设置参数选项  2
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER , 1); //0启用浏览器输出 1 关闭浏览器输出，可用变量接收响应
+        curl_setopt($ch,CURLOPT_POST,true);
+        curl_setopt($ch,CURLOPT_HTTPHEADER,['Content-Type:application/json']);
+        curl_setopt($ch,CURLOPT_POSTFIELDS,json_encode($ticket));
+
+        $response=curl_exec($ch);   //执行
+
+        //处理报错
+        // $errno=curl_errno($ch);    //错误码
+        // $error=curl_error($ch);    //错误信息
+
+        curl_close($ch);  //关闭
+
+        $arr=json_decode($response,true);
+        // dd($arr);
+
+        //转二维码
+        $tickets=UrlEncode($arr['ticket']);
+        $urls='https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket='.$tickets;
+        // $file=file_get_contents($urls);
+        return redirect($urls);
         
-         //捕获错误
-         $errno = curl_error($ch);
-         $error = curl_error($ch);
-         if($errno > 0){
-             echo "错误码".$errno;
-             echo "错误信息".$error;
-             die;
-         }
+    }
 
-          //关闭会话
-          curl_close($ch);
-         
-    }
-    public function post1()
-    {
-        echo "我是API 开始";
-        echo print_r($_POST);
-        echo "我是API 结束";
-    }
-    public function post2()
-    {
-        $json =file_decode($json,true);
-        echo $arr;
-    }
-    public function curlPost3()
-    {
-        $user_info = [
-            'user_name' => "zhangsan",
-            "password"  => '123456' 
-        ];
-        $json = json_encode($user_info);
-        $url = "http://1906api.com/wx/post1";
-        //初始化 
-        $ch = curl_init($url);
+    //Guzzle
+    public function Guzzle(){
+        $Appid='wx8bc80f5949fda528';
+        $appsecret='f4852897a0b441624d7c845c878f2548';
+        $url='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$Appid.'&secret='.$appsecret;
 
-        //设置参数
-          curl_setopt($ch, CURLOPT_HEADER, 0);
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-          curl_setopt($ch,CURLOPT_POST,1);
-          curl_setopt($ch,CURLOPT_POSTFIELDS,$user_info);
-           //执行会话
-         $response = curl_exec($ch);
-        
-         //捕获错误
-         $errno = curl_error($ch);
-        //  $error = curl_error($ch);
-         if($errno > 0){
-             echo curl_error();
-             die;
-         }
-
-          //关闭会话
-          curl_close($ch);
-    }
-    //访问接口  上传文件
-    public function curlUpload()
-    {
-        $file_info = [
-            'username' => "zhangsan",
-            "email" => "3228682711@qq.com",
-            'img' => new \CURLFile(storage_path("aaa.jgp")),
-        ];
-        $json = json_encode($user_info);
-        $url = "http://1906api.com/wx/upload";
-        //初始化 
-        $ch = curl_init($url);
-
-        //设置参数
-          curl_setopt($ch, CURLOPT_HEADER, 0);
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-          curl_setopt($ch,CURLOPT_POST,1);
-          curl_setopt($ch,CURLOPT_POSTFIELDS,$user_info);
-           //执行会话
-         $response = curl_exec($ch);
-        
-         //捕获错误
-         $errno = curl_error($ch);
-        //  $error = curl_error($ch);
-         if($errno > 0){
-             echo "错误码" . $errno;die;
-             echo curl_error();
-             die;
-         }
-
-          //关闭会话
-          curl_close($ch);
-    }
-    //
-    public function testUpload()
-    {
-        echo "<pre>";print_r($_POST);echo "</pre>";
-        echo "接收文件";echo "<br>";
-        echo "<pre>";print_r($_FILES);echo "</pre>";
-    }
-    public function guzzleGet()
-    {
         $client = new Client();
-        $url = "http://1906api.com/wx/get1?aa=bb&cc=ddd";
+        $response =$client->request('GET',$url);
+        $data =$response->getBody();
 
-        $response = $client->requst('GET',$curl,[
-            'query_params'  =>[
-                'user'  => 'zhangsan',
-                'name'  =>  'hahah',
-            ]
-        ]);
-        echo $response->getBody();//接收服务器
+        $arr=json_decode($data,true);
+        dd($arr);
+        // echo $data;
+
     }
-    public function guzzlePost()
-    {
-        $client = new Client();
-        $url = "http://1906api.com/wx/post1";
-        $response = $client->request('POST',$url,[
-            'multipart' => [
-                [
-                    'name'  => "user_name",
-                    'comtents'  => "zhangsan"
+
+    //Guzzle  post
+    public function GuzzlePost(){
+        $token='30_XCg_HQ7KEHZwL32a3IeeCSscd9Yon0pzcfVEGREV6lU_qJ4m_LnGt9R2z3835iK9AiLSvdR0l-H3lIjyFey0pnc2QFl0WfIil-5d1i80sbUajvL2dkSL8AbePc-bENg_zKA5GLPSqZZXYV_2XBEaACAKOR';
+        $url='https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$token;
+        $ticket=[
+            'expire_seconds'=>'604800',
+            'action_name'=>'QR_STR_SCENE',
+            'action_info'=>[
+                'scene'=>[
+                    'scene_str'=>'test'
                 ]
             ]
+        ];
+
+
+        $client = new Client();
+        $response =$client->request('POST',$url,[
+            'body'=>json_encode($ticket,JSON_UNESCAPED_UNICODE),
         ]);
+        $t=$response->getBody();
+        $arr=json_decode($t,true);
+        // dd($arr);
+        
+        //转二维码
+        $tickets=UrlEncode($arr['ticket']);
+        $urls='https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket='.$tickets;
+        // $file=file_get_contents($urls);
+        return redirect($urls);
 
     }
-    public function count1()
-    {
-        $ua = $_SERVER['HTTP_USER_AGENT'];
-        // echo $ua;
-        $u = md5($ua);
-        // echo "md5 ua :" .$u;echo "<br>";
-        $u = substr($u,5,5);
-        // echo "u:".$u;echo "<br>";
 
-        //限制访问次数
-        $max =env('API_ACCESS_COUNT');
 
-        //判断次数是否已达上限
-        $key =$u . ":count1";
-        echo $key;echo "<br>";
-        $number = Redis::get($key);
-        echo "现有访问次数 :".$number;echo "<br>";
-        //超过上限
-        if($number > $max){
-            $timeout = env('TIMEOUT_SECOND'); //10内禁止
-            Redis::expire($key,$timeout);
-            echo "接口访问受限,超过访问次数" .$max;
-            echo "请".$timeout.'秒后访问';
+
+    public function post1(){
+        dump($_POST);
+    }
+
+    public function post2(){
+        print_r($_POST);
+    }
+
+    public function post3(){
+        echo "aaaa";  
+        $data=file_get_contents("php://input");
+        $arr=json_decode($data,true);
+        dump($arr);
+        echo "aaaa";   
+    }
+
+    public function upload(){
+        print_r($_POST);
+        echo "<br>";
+        print_r($_FILES);
+    }
+
+    public function guzzleget(){
+        print_r($_GET);
+    }
+
+    public function guzzlepost1(){
+        echo "<pre>";print_r($_POST);"/pre";
+    }
+
+    public function guzzleupload(){
+        print_r($_POST);
+
+        print_r($_FILES);
+    }
+
+    public function guzzlejson(){
+        $data=file_get_contents("php://input");
+        $arr=json_decode($data,true);
+        dump($arr);
+    }
+
+
+    public function redisfs(){
+        //redis  key
+        $ua_key="count:".substr(md5($_SERVER['HTTP_USER_AGENT']),5,5);
+        echo "redis的key：".$ua_key;echo "<br>";
+        
+        //次数
+        $count=Redis::incr($ua_key);
+        echo "访问次数".$count."：正常访问"; echo "<br>";
+
+        //过期时间
+        // $time=Redis::ttl($ua_key);
+        //判断
+        $get=Redis::get($ua_key);
+        if($get>=10){
+            echo "刷新次数有限";
+            Redis::expire($ua_key,10);
             die;
-
         }
-        //计数
-        $count = Redis::incr($key);
-        echo $count;echo "<br>";
-        echo "访问正常";
-    }
-    public function api2()
-    {
-        $ua = $_SERVER['HTTP_USER_AGENT'];
-        $u = md5($ua);
-        $u = substr($u,5,5);
-
-        //获取当前url
-        $uri = $_SERVER['REQUEST_URI'];
-        echo "uri".$uri;
-        $md5_uri = substr(md5($uri),0,8);
-        echo $md5_uri;
-        $key = 'count:uri'.$u.$md5_uri;
-
-        $count = Redis::get($key);
-        echo "当前接口计数" .$count;
-        $max = env('API_ACCESS_COUNT');  //接口访问限制
-        echo "接口访问最大次数".$max;
-
-        if($count > $max){
-            echo "你在刷接口";
             
-            die;
-        }
-        Redis::incr($key);
+        echo "正常访问";    
     }
-    public function api3()
-    {
-        $ua = $_SERVER['HTTP_USER_AGENT'];
-        $u = md5($ua);
-        $u = substr($u,5,5);
 
-        //获取当前url
-        $uri = $_SERVER['REQUEST_URI'];
-        echo "uri".$uri;
-        $md5_uri = substr(md5($uri),0,8);
-        echo $md5_uri;
-        $key = 'count:uri'.$u.$md5_uri;
+
+    public function md5get(){
+
+        $key="key";   //签名的key
+        echo "签名签名：".$key;echo "<br>";
+
+        $data=$_GET['data'];  //发送前的数据
+        echo "数据：".$data;echo "<br>";
+
+        $sign=md5($data.$key); //数据  和 签名
+        echo "加密的签名，没加密数据和签名key：".$sign;echo "<br>";
+    }
+
+    public function md5shou(){
+        $key="key";            //签名的key
+        echo "签名的key".$key;echo "<br>";
+        $data=$_GET['data'];   //接受数据
+        echo "接受的数据".$data;echo "<br>";
+        $sign=$_GET['sign'];   //接受签名
+        echo "接受加密的数据和签名".$sign;echo "<br>";
+        $sign2=md5($data.$key);   //加密 数据和签名
+        echo "给数据和签名加密".$sign2;echo "<br>";
+        if($sign!==$sign2){       
+            echo "验证失败";die;
+        }
+
+        echo "哈喽";
+
+    }
+
+    public function verifySign(){
+        $key="key";
+        
+        $data=$_GET['data'];
+        $sign=$_GET['sign'];
+
+        $sign2=md5($data.$key);
+
+        if($sign==$sign2){
+            echo "验证成功";
+        }else{
+            echo "验证失败";
+        }
+    }
+
+
+    public function decrypt(){
+        $yuanlaishuju=$_GET['data'];   //接受的数据
+
+        $data=$_GET['miw'];  //接受密文
+
+        $str=strlen($data);  //取字符串长度
+        
+        $code='';  //解密的 数据
+
+        for($i=0;$i<$str;$i++){   //循环解密
+            $miwen=$data[$i];  //密文
+            $ord=ord($data[$i]);    //密文  转 数字
+            echo "密文".$miwen."=>"."密文数字".$ord;echo "<br>";
+
+            // echo "<hr>";
+            $pass=ord($data[$i])-3;   //密文-3  得到 数据的 码
+            echo "原数据的数字码".$pass; echo "<hr>";
+            $code .=chr($pass);
+            
+        }
+        echo "原来数据".$code;echo "<hr>";
+
+
+        if($yuanlaishuju==$code){
+            echo "验证成功";
+        }else{
+            echo "验证失败";
+        }  
+    }
+
+    //对称
+    public function decrypt1(){
+        $sign_key='sign';   //签名
+        $sign=$_GET['sign']; //接收 签名 
+        $data=$_GET['data']; //接受 数据
+
+        //解 对称 加密
+        $key='key';
+        $method="aes-128-cbc";  //算法
+        $iv='asdzxcqwe1234rfh';   //十六个字节
+        $base=base64_decode($data);   //将  base64  转为  密文
+        // echo $base;
+        $enc=openssl_decrypt($base,$method,$key,OPENSSL_RAW_DATA,$iv);  //解密
+        $sign2=md5($enc.$sign_key);
+        if($sign==$sign2){
+            echo "验证成功,原来的数据：".$enc;
+        }else{
+            echo "验证失败";
+        }
     }
 }
