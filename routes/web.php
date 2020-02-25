@@ -69,3 +69,4 @@ Route::prefix('/test')->middleware('ApiFilter')->group(function(){
     
 });
 
+Route::any("alipay/test1","Ali\ApipaiController2@test1");
